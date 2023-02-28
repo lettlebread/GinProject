@@ -23,5 +23,8 @@ func Run() {
 		mid.JWTValidate,
 		userHandler.ListUser)
 
+	ge.GET("/user/:account",
+		mid.JWTValidate,
+		userHandler.GetUser)
 	ge.Run()
 }

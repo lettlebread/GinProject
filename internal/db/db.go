@@ -1,6 +1,7 @@
 package db
 
 import (
+	"GinProject/internal/model"
 	"log"
 	"os"
 
@@ -29,6 +30,8 @@ func Init() {
 		log.Fatal(err)
 		panic(err)
 	}
+
+	ds.AutoMigrate(&model.Users{})
 
 	dbSession = ds
 }

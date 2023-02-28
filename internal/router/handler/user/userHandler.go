@@ -44,3 +44,23 @@ func ListUser(c *gin.Context) {
 		"data":  users,
 	})
 }
+
+func GetUser(c *gin.Context) {
+	var user model.ApiUsers
+	var dbResult *gorm.DB
+
+	account := c.Param("account")
+
+	dbResult = ds.Model(&model.Users{}).Where("acct = ?", account).Select("acct", "fullname", "created_at", "updated_at").First(&user)
+
+	if dbResult.Error != nil {
+		log.Fatal(dbResult.Error)
+		c.Error(dbResult.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"error": "null",
+		"data":  user,
+	})
+}
