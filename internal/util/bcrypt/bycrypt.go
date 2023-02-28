@@ -16,3 +16,12 @@ func EncryptString(str string) (string, error) {
 
 	return string(hashedByte), nil
 }
+
+func ComparePassword(hashedPwd string, pwd string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(pwd))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

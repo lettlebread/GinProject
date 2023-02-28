@@ -14,6 +14,7 @@ import (
 
 	"GinProject/internal/db"
 	bcryptUtil "GinProject/internal/util/bcrypt"
+	jwtUtil "GinProject/internal/util/jwt"
 
 	validator "gopkg.in/validator.v2"
 )
@@ -113,5 +114,52 @@ func CreateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"error": "null",
+	})
+}
+
+func Login(c *gin.Context) {
+	var dbResult *gorm.DB
+	var payload model.LoginUserData
+	var user model.Users
+
+	err := c.Bind(&payload)
+	if err != nil {
+		log.Fatal(err)
+		c.Error(err)
+		return
+	}
+
+	err = validator.Validate(payload)
+	if err != nil {
+		log.Fatal(err)
+		c.Error(err)
+		return
+	}
+
+	dbResult = ds.Model(&model.Users{}).Where("acct = ?", payload.Account).Select("acct", "pwd").First(&user)
+	if dbResult.Error != nil {
+		log.Fatal(dbResult.Error)
+		c.Error(dbResult.Error)
+		return
+	}
+
+	err = bcryptUtil.ComparePassword(user.Pwd, payload.Password)
+	if err != nil {
+		c.JSON(401, gin.H{
+			"error": "login failed",
+		})
+		return
+	}
+
+	token, err := jwtUtil.CreateToken(payload.Account)
+	if err != nil {
+		log.Fatal(err)
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"error": "null",
+		"token": token,
 	})
 }

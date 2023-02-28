@@ -30,5 +30,8 @@ func Run() {
 	ge.POST("/user",
 		userHandler.CreateUser)
 
+	ge.POST("/login",
+		userHandler.Login)
+
 	ge.Run()
 }
