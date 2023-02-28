@@ -17,3 +17,9 @@
 postgresql_data
 
 dev-keys
+
+.env
+
+GinProject
+
+cmd/cmd
