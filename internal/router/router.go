@@ -26,5 +26,9 @@ func Run() {
 	ge.GET("/user/:account",
 		mid.JWTValidate,
 		userHandler.GetUser)
+
+	ge.POST("/user",
+		userHandler.CreateUser)
+
 	ge.Run()
 }

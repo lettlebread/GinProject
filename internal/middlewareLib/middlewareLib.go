@@ -1,7 +1,7 @@
 package middlewareLib
 
 import (
-	jwtUtil "GinProject/internal/util"
+	jwtUtil "GinProject/internal/util/jwt"
 	"errors"
 	"strings"
 

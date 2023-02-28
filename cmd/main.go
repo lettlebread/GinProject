@@ -4,7 +4,7 @@ import (
 	"GinProject/internal/db"
 	"GinProject/internal/router"
 	userHandler "GinProject/internal/router/handler/user"
-	jwtUtil "GinProject/internal/util"
+	jwtUtil "GinProject/internal/util/jwt"
 )
 
 func main() {
