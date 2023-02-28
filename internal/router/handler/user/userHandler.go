@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -32,12 +33,24 @@ func ListUser(c *gin.Context) {
 	var dbResult *gorm.DB
 
 	fullName := c.Query("fullname")
+	page, _ := strconv.Atoi(c.Query("page"))
+	pagesize, _ := strconv.Atoi(c.Query("pagesize"))
+	sortby := c.Query("sortby")
+
+	dbResult = ds.Model(&model.Users{}).Select("acct", "fullname", "created_at", "updated_at")
 
 	if fullName != "" {
-		dbResult = ds.Model(&model.Users{}).Where("fullname = ?", fullName).Select("acct", "fullname", "created_at", "updated_at").Find(&users)
-	} else {
-		dbResult = ds.Model(&model.Users{}).Select("acct", "fullname", "created_at", "updated_at").Find(&users)
+		dbResult = dbResult.Where("fullname = ?", fullName)
+	} else if page > 0 && pagesize > 0 {
+		offset := (page - 1) * pagesize
+		dbResult = dbResult.Offset(offset).Limit(pagesize)
 	}
+
+	if sortby != "" && isValidCol(sortby) {
+		dbResult = dbResult.Order(sortby)
+	}
+
+	dbResult = dbResult.Find(&users)
 
 	if dbResult.Error != nil {
 		log.Fatal(dbResult.Error)
@@ -49,6 +62,18 @@ func ListUser(c *gin.Context) {
 		"error": "null",
 		"data":  users,
 	})
+
+}
+
+func isValidCol(col string) bool {
+	arr := []string{"acct", "fullname", "created_at", "updated_at"}
+
+	for _, v := range arr {
+		if v == col {
+			return true
+		}
+	}
+	return false
 }
 
 func GetUser(c *gin.Context) {
