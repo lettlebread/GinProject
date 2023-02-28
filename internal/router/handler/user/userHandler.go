@@ -23,12 +23,19 @@ func Init() {
 
 func ListUser(c *gin.Context) {
 	var users []model.ApiUsers
+	var dbResult *gorm.DB
 
-	result := ds.Model(&model.Users{}).Select("acct", "fullname", "created_at", "updated_at").Find(&users)
+	fullName := c.Query("fullname")
 
-	if result.Error != nil {
-		log.Fatal(result.Error)
-		c.Error(result.Error)
+	if fullName != "" {
+		dbResult = ds.Model(&model.Users{}).Where("fullname = ?", fullName).Select("acct", "fullname", "created_at", "updated_at").Find(&users)
+	} else {
+		dbResult = ds.Model(&model.Users{}).Select("acct", "fullname", "created_at", "updated_at").Find(&users)
+	}
+
+	if dbResult.Error != nil {
+		log.Fatal(dbResult.Error)
+		c.Error(dbResult.Error)
 		return
 	}
 
