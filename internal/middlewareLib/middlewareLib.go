@@ -21,11 +21,12 @@ func JWTValidate(c *gin.Context) {
 		c.AbortWithError(401, authError)
 	}
 
-	_, err := jwtUtil.VarifyToken(parts[1])
+	account, err := jwtUtil.VarifyToken(parts[1])
 	if err != nil {
 		c.AbortWithError(401, authError)
 	}
 
+	c.Set("CURRENT_USER", account)
 	c.Next()
 }
 

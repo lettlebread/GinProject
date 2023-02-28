@@ -163,3 +163,29 @@ func Login(c *gin.Context) {
 		"token": token,
 	})
 }
+
+func DeleteUser(c *gin.Context) {
+	var dbResult *gorm.DB
+
+	account := c.Param("account")
+	currentUser := c.GetString("CURRENT_USER")
+
+	if account == currentUser {
+		c.JSON(http.StatusOK, gin.H{
+			"error": "can't delete current user",
+		})
+		return
+	}
+
+	dbResult = ds.Where("acct = ?", account).Delete(&model.Users{})
+
+	if dbResult.Error != nil {
+		log.Fatal(dbResult.Error)
+		c.Error(dbResult.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"error": "null",
+	})
+}
