@@ -33,3 +33,7 @@ type LoginUserData struct {
 	Account  string `json:"account" validate:"min=4,max=50,regexp=^[a-zA-Z0-9]*"`
 	Password string `json:"password" validate:"min=8,max=50"`
 }
+
+type UpdateUserData struct {
+	Fullname string `json:"fullname" validate:"min=4,max=50,regexp=^[a-zA-Z0-9]*"`
+}

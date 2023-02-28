@@ -1,7 +1,7 @@
 package userHandler
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -60,9 +60,15 @@ func GetUser(c *gin.Context) {
 	dbResult = ds.Model(&model.Users{}).Where("acct = ?", account).Select("acct", "fullname", "created_at", "updated_at").First(&user)
 
 	if dbResult.Error != nil {
-		fmt.Print("in error")
-		log.Fatal(dbResult.Error)
-		c.Error(dbResult.Error)
+		if errors.Is(dbResult.Error, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusOK, gin.H{
+				"error": "user not found",
+			})
+		} else {
+			log.Fatal(dbResult.Error)
+			c.Error(dbResult.Error)
+		}
+
 		return
 	}
 
@@ -188,4 +194,56 @@ func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"error": "null",
 	})
+}
+
+func UpdateUser(c *gin.Context) {
+	var dbResult *gorm.DB
+	var payload model.UpdateUserData
+	var user model.Users
+	account := c.Param("account")
+
+	err := c.Bind(&payload)
+	if err != nil {
+		log.Fatal(err)
+		c.Error(err)
+		return
+	}
+
+	err = validator.Validate(payload)
+	if err != nil {
+		log.Fatal(err)
+		c.Error(err)
+		return
+	}
+
+	dbResult = ds.Model(&model.Users{}).Where("acct = ?", account).Select("acct").First(&user)
+
+	if dbResult.Error != nil {
+		if errors.Is(dbResult.Error, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusOK, gin.H{
+				"error": "user not found",
+			})
+		} else {
+			log.Fatal(dbResult.Error)
+			c.Error(dbResult.Error)
+		}
+
+		return
+	}
+
+	dbResult = ds.Model(&model.Users{}).Where("acct = ?", account).Updates(map[string]interface{}{"fullname": payload.Fullname, "updated_at": time.Now()})
+
+	if dbResult.Error != nil {
+		log.Fatal(dbResult.Error)
+		c.Error(dbResult.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"error": "null",
+	})
+}
+
+func NoRoute(c *gin.Context) {
+	c.JSON(404, gin.H{"error": "page not found"})
 }

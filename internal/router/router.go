@@ -30,12 +30,18 @@ func Run() {
 	ge.POST("/user",
 		userHandler.CreateUser)
 
+	ge.PATCH("/user/:account",
+		mid.JWTValidate,
+		userHandler.UpdateUser)
+
 	ge.DELETE("/user/:account",
 		mid.JWTValidate,
 		userHandler.DeleteUser)
 
 	ge.POST("/login",
 		userHandler.Login)
+
+	ge.NoRoute(userHandler.NoRoute)
 
 	ge.Run()
 }
