@@ -37,3 +37,22 @@ type LoginUserData struct {
 type UpdateUserData struct {
 	Fullname string `json:"fullname" validate:"min=4,max=50,regexp=^[a-zA-Z0-9]*"`
 }
+
+type SuccessUserListResponse struct {
+	Error string
+	Data  []ApiUsers
+}
+
+type SuccessUserResponse struct {
+	Error string
+	Data  ApiUsers
+}
+
+type BasicSuccessResponse struct {
+	Error string
+}
+
+type LoginSuccessResponse struct {
+	Error string
+	Token string
+}

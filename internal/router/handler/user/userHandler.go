@@ -28,6 +28,16 @@ func Init() {
 	ds = db.GetDBSession()
 }
 
+// @Summary get user list
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param page query integer false "page for pagination"
+// @param pagesize query integer false "page size for pagination"
+// @param fullname query string false "find user with fullname"
+// @param sortby query string false "sort result by column"
+// @Success 200 {object} model.SuccessUserListResponse "return user list"
+// @Router /user [get]
 func ListUser(c *gin.Context) {
 	var users []model.ApiUsers
 	var dbResult *gorm.DB
@@ -76,6 +86,16 @@ func isValidCol(col string) bool {
 	return false
 }
 
+// @Summary get user
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param page query integer false "page for pagination"
+// @param pagesize query integer false "page size for pagination"
+// @param fullname query string false "find user with fullname"
+// @param sortby query string false "sort result by column"
+// @Success 200 {object} model.SuccessUserResponse "return user"
+// @Router /user/{account} [get]
 func GetUser(c *gin.Context) {
 	var user model.ApiUsers
 	var dbResult *gorm.DB
@@ -103,6 +123,13 @@ func GetUser(c *gin.Context) {
 	})
 }
 
+// @Summary create user
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param userdata body model.CreateUserData true "user data"
+// @Success 200 {object} model.BasicSuccessResponse "return error message"
+// @Router /user [post]
 func CreateUser(c *gin.Context) {
 	var dbResult *gorm.DB
 	var payload model.CreateUserData
@@ -148,6 +175,13 @@ func CreateUser(c *gin.Context) {
 	})
 }
 
+// @Summary user login
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param userdata body model.LoginUserData true "user data"
+// @Success 200 {object} model.LoginSuccessResponse "return jwt token"
+// @Router /login [post]
 func Login(c *gin.Context) {
 	var dbResult *gorm.DB
 	var payload model.LoginUserData
@@ -195,6 +229,13 @@ func Login(c *gin.Context) {
 	})
 }
 
+// @Summary delete user
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param account path string true "user account"
+// @Success 200 {object} model.BasicSuccessResponse "return error message "
+// @Router /user/{account} [delete]
 func DeleteUser(c *gin.Context) {
 	var dbResult *gorm.DB
 
@@ -221,6 +262,14 @@ func DeleteUser(c *gin.Context) {
 	})
 }
 
+// @Summary update user
+// @Tags user
+// @version 1.0
+// @produce application/json
+// @param account path string true "user account"
+// @param userdata body model.UpdateUserData true "user data"
+// @Success 200 {object} model.BasicSuccessResponse "return error message "
+// @Router /user/{account} [patch]
 func UpdateUser(c *gin.Context) {
 	var dbResult *gorm.DB
 	var payload model.UpdateUserData
